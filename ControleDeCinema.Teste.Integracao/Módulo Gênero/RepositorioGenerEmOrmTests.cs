@@ -104,7 +104,6 @@ namespace ControleDeCinema.Teste.Integracao.ModuloGenero
 
             Assert.IsNull(registroSelecionado);
             Assert.IsTrue(ConseguiuExcluir);
-
         }
     }
 }
