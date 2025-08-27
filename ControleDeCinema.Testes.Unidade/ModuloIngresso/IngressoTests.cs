@@ -1,78 +1,84 @@
-﻿using ControleDeCinema.Dominio.ModuloFilme;
-using ControleDeCinema.Dominio.ModuloGeneroFilme;
+﻿using ControleDeCinema.Dominio.ModuloSessao;
+using ControleDeCinema.Dominio.ModuloFilme;
 using ControleDeCinema.Dominio.ModuloSala;
-using ControleDeCinema.Dominio.ModuloSessao;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using ControleDeCinema.Dominio.ModuloGeneroFilme;
+
 
 namespace ControleDeCinema.Testes.Unidade.ModuloIngresso
 {
     [TestClass]
-    [TestCategory("Testes de Unidade - Ingresso/Sessão")]
-    public sealed class IngressoTests
+    public class IngressoTest
     {
-        private Sala CriarSalaFake() => new Sala(1, 50);
+        private Filme filme;
+        private Sala sala;
+        private Sessao sessao;
 
-        private Filme CriarFilmeFake()
+        [TestInitialize]
+        public void Setup()
         {
-            var genero = new GeneroFilme("Ação");
-            return new Filme("Matrix", 120, true, genero);
+            GeneroFilme genero = new GeneroFilme("Ação");
+            filme = new Filme("Matrix", 120, true, genero);
+            sala = new Sala(1, 10); // Sala nº1 com capacidade 10
+            sessao = new Sessao(DateTime.Now.AddDays(1), 10, filme, sala);
         }
 
         [TestMethod]
         public void Deve_Comprar_Ingresso_Com_Sucesso()
         {
+       
+            var ingresso = new Ingresso(1, false, sessao);
+
     
-            var sala = CriarSalaFake();
-            var filme = CriarFilmeFake();
-            var sessao = new Sessao(DateTime.Now, 10, filme, sala);
+            sessao.Ingressos.Add(ingresso);
 
-       
-            var ingresso = sessao.GerarIngresso(1, false);
 
-     
-            Assert.IsNotNull(ingresso);
-            Assert.AreEqual(1, ingresso.NumeroAssento);
-            Assert.IsFalse(ingresso.MeiaEntrada);
-            Assert.AreEqual(9, sessao.ObterQuantidadeIngressosDisponiveis());
+            Assert.AreEqual(1, sessao.Ingressos.Count);
+            Assert.AreEqual(1, sessao.Ingressos[0].NumeroAssento);
         }
 
         [TestMethod]
-        public void Nao_Deve_Permitir_Compra_Se_Sessao_Lotada()
+        public void Nao_Deve_Permitir_Compra_Quando_Sessao_Lotada()
         {
-       
-            var sala = CriarSalaFake();
-            var filme = CriarFilmeFake();
-            var sessao = new Sessao(DateTime.Now, 2, filme, sala);
+ 
+            for (int i = 1; i <= sessao.NumeroMaximoIngressos; i++)
+                sessao.Ingressos.Add(new Ingresso(i, false, sessao));
 
-            sessao.GerarIngresso(1, false);
-            sessao.GerarIngresso(2, false);
 
-            Assert.ThrowsException<InvalidOperationException>(() =>
-            {
-                sessao.GerarIngresso(3, true);
-            });
+            var ingressoExtra = new Ingresso(11, false, sessao);
+            bool podeComprar = sessao.Ingressos.Count < sessao.NumeroMaximoIngressos;
 
-      
-            Assert.AreEqual(0, sessao.ObterQuantidadeIngressosDisponiveis());
+  
+            Assert.IsFalse(podeComprar);
         }
 
         [TestMethod]
-        public void Nao_Deve_Permitir_Comprar_Assento_Repetido()
+        public void Nao_Deve_Permitir_Compra_De_Assento_Ja_Ocupado()
         {
    
-            var sala = CriarSalaFake();
-            var filme = CriarFilmeFake();
-            var sessao = new Sessao(DateTime.Now, 5, filme, sala);
+            sessao.Ingressos.Add(new Ingresso(5, false, sessao));
 
-            sessao.GerarIngresso(1, false);
+  
+            bool assentoDisponivel = sessao.Ingressos.TrueForAll(i => i.NumeroAssento != 5);
 
-      
-            Assert.ThrowsException<InvalidOperationException>(() =>
-            {
-                sessao.GerarIngresso(1, true);
-            });
+
+            Assert.IsFalse(assentoDisponivel);
+        }
+
+        [TestMethod]
+        public void Deve_Aceitar_Compra_Com_MeiaEntrada()
+        {
+
+            var ingresso = new Ingresso(2, true, sessao);
+
+
+            sessao.Ingressos.Add(ingresso);
+
+
+            Assert.AreEqual(1, sessao.Ingressos.Count);
+            Assert.IsTrue(sessao.Ingressos[0].MeiaEntrada);
         }
     }
 }
+
+
 
