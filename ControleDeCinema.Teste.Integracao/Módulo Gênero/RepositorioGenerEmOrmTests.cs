@@ -1,8 +1,8 @@
 ﻿using ControleDeCinema.Dominio.ModuloGeneroFilme;
 using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 using ControleDeCinema.Infraestrutura.Orm.ModuloGeneroFilme;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using ControleDeCinema.Teste.Integracao.Compartilhado;
+
 
 namespace ControleDeCinema.Teste.Integracao.ModuloGenero
 {
@@ -18,24 +18,9 @@ namespace ControleDeCinema.Teste.Integracao.ModuloGenero
 
         public void ConfigurarTeste()
         {
-            var assembly = typeof(RepositorioGenerEmOrmTests).Assembly;
-
-            var configuracao = new ConfigurationBuilder()
-                .AddUserSecrets(assembly)
-                .Build();
-
-            var connectionString = configuracao["SQL_CONNECTION_STRING"];
-
-            var options = new DbContextOptionsBuilder<ControleDeCinemaDbContext>()
-                .UseNpgsql(connectionString)
-                .Options;
-
-            dbcontext = new ControleDeCinemaDbContext(options);
+            dbcontext = TestDbContextFactory.CriarDbContext();
 
             repositorioGenero = new RepositorioGeneroFilmeEmOrm(dbcontext);
-
-            dbcontext.Database.EnsureDeleted();
-            dbcontext.Database.EnsureCreated();
         }
 
         [TestMethod]
