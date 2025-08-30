@@ -60,4 +60,28 @@ public class SessaoAppServiceTests
         Assert.IsTrue(resultado.Errors.Any(e => e.Message.Contains("O Número de ingressos Não pode ser 0")));
         Assert.IsTrue(resultado.Errors.Any(e => e.Message.Contains("O inicio da sessão deve ser informado")));
     }
+    [TestMethod]
+    public void Nao_Deve_Cadastrar_Sessao_Com_Conflito_De_Horario()
+    {
+        // arrange
+        var genero = new GeneroFilme("ficção");
+        var filme = new Filme("Matrix", 90, true, genero);
+        var sala = new Sala();
+
+        var sessaoExistente = new Sessao(DateTime.Today.AddHours(20), 50, filme, sala);
+        var novaSessao = new Sessao(DateTime.Today.AddHours(21), 50, filme, sala);
+
+        repositorioSessaoMock.Setup(r => r.SelecionarRegistros())
+            .Returns(new List<Sessao> { sessaoExistente });
+
+        // act
+        Result resultado = sessaoAppService.Cadastrar(novaSessao);
+
+        // assert
+        Assert.IsTrue(resultado.IsFailed);
+        Assert.AreEqual("Registro duplicado", resultado.Errors[0].Message);
+    }
+
+
 }
+
