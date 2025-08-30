@@ -30,6 +30,9 @@ public class GeneroFilmeAppService
 
     public Result Cadastrar(GeneroFilme generoFilme)
     {
+        if (generoFilme.Descricao is null)
+            return Result.Fail("O Gênero é obrigatorio");
+
         var registros = repositorioGeneroFilme.SelecionarRegistros();
 
         if (registros.Any(i => i.Descricao.Equals(generoFilme.Descricao)))

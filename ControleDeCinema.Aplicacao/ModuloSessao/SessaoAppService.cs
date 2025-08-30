@@ -31,7 +31,41 @@ public class SessaoAppService
     {
         List<string> erros = new List<string>();
 
-        if (sessao.NumeroMaximoIngressos > sessao.Sala.Capacidade)
+        if (sessao.Sala is null)
+            erros.Add("Deve conter uma sala");
+
+        if (sessao.Filme is null)
+            erros.Add("Deve conter uma um filme para cadastrar uma sessão");
+
+        if (sessao.NumeroMaximoIngressos <= 0)
+            erros.Add("O Número de ingressos Não pode ser 0");
+
+        if(sessao.Inicio == DateTime.MinValue)
+            erros.Add("O inicio da sessão deve ser informado");
+
+        if (erros.Any())
+        {
+            var errosDetalhados = erros.Select(e => new Error(e)).ToList();
+            
+            errosDetalhados.Insert(0, new Error("Erro ao cadastrar sessão"));
+            return Result.Fail(errosDetalhados);
+        }
+          var inicioNova = sessao.Inicio;
+          var fimNova = sessao.Inicio.AddMinutes(sessao.Filme.Duracao);
+
+          foreach (var s in repositorioSessao.SelecionarRegistros())
+         {
+            var inicioExistente = s.Inicio;
+            var fimExistente = s.Inicio.AddMinutes(s.Filme.Duracao);
+
+            if (inicioNova < fimExistente && fimNova > inicioExistente)
+                erros.Add("Já existe uma sessão nesta sala para o mesmo horário.");
+         }
+
+
+
+
+        if (sessao.Sala != null && sessao.NumeroMaximoIngressos > sessao.Sala.Capacidade)
             erros.Add("O número máximo de ingressos não pode exceder a capacidade da sala.");
 
         // evitar duplicidade de sessão por sala/horário

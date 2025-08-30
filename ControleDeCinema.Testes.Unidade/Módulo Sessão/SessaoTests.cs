@@ -46,11 +46,8 @@ public class SessaoTests
     public void Obter_Quantidade_De_Ingressos_Disponiveis()
     {
         //arrange
-       var Ingresso = new Ingresso(2,false,sessao);
-       var Ingresso2 = new Ingresso(1,true,sessao);
-
-       sessao.Ingressos.Add(Ingresso);
-       sessao.Ingressos.Add(Ingresso2);
+        sessao.GerarIngresso(1, true);
+        sessao.GerarIngresso(2, false);
         //act
         var IngressosDisponiveis = sessao.ObterQuantidadeIngressosDisponiveis();
         //assert
