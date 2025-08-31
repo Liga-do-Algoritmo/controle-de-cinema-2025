@@ -12,23 +12,8 @@ namespace ControleDeCinema.Teste.Integracao;
 
 [TestClass]
 [TestCategory("Teste Integração de Filmes")]
-public class RepositorioFilmeEmOrmTests
+public class RepositorioFilmeEmOrmTests :Testfixture
 {
-    private RepositorioFilmeEmOrm repositorioFilme;
-    private ControleDeCinemaDbContext dbContext;
-    private RepositorioGeneroFilmeEmOrm repositorioGenero;
-
-    [TestInitialize]
-    public void ConfigurarTeste()
-    {
-        dbContext = TestDbContextFactory.CriarDbContext();
-
-        repositorioFilme = new RepositorioFilmeEmOrm(dbContext);
-        repositorioGenero = new RepositorioGeneroFilmeEmOrm(dbContext);
-
-        BuilderSetup.SetCreatePersistenceMethod<GeneroFilme>(repositorioGenero.Cadastrar);
-    }
-
     [TestMethod]
     public void Deve_Cadastrar_Filmes_Corretamente()
     {

@@ -2,30 +2,21 @@
 using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 using ControleDeCinema.Infraestrutura.Orm.ModuloSala;
 using ControleDeCinema.Teste.Integracao.Compartilhado;
+using Docker.DotNet.Models;
 
 namespace ControleDeCinema.Teste.Integracao.ModuloSala
 {
     [TestClass]
     [TestCategory("Teste de Integração de Sala")]
-    public class RepositorioSalaEmOrmTests
-    {
-        private ControleDeCinemaDbContext dbcontext;
-        private RepositorioSalaEmOrm repositorioSala;
-
-        [TestInitialize]
-        public void ConfigurarTeste()
-        {
-            dbcontext = TestDbContextFactory.CriarDbContext();
-            repositorioSala = new RepositorioSalaEmOrm(dbcontext);
-        }
-
+    public class RepositorioSalaEmOrmTests : Testfixture
+    { 
         [TestMethod]
         public void Deve_Cadastrar_Sala_Corretamente()
         {
             var sala = new Sala(1, 100);
 
             repositorioSala.Cadastrar(sala);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             var registroSelecionado = repositorioSala.SelecionarRegistroPorId(sala.Id);
 
@@ -42,7 +33,7 @@ namespace ControleDeCinema.Teste.Integracao.ModuloSala
             repositorioSala.Cadastrar(sala1);
             repositorioSala.Cadastrar(sala2);
             repositorioSala.Cadastrar(sala3);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             var salasEsperadas = new List<Sala> { sala1, sala2, sala3 };
             var salasSelecionadas = repositorioSala.SelecionarRegistros();
@@ -55,12 +46,12 @@ namespace ControleDeCinema.Teste.Integracao.ModuloSala
         {
             var sala = new Sala(1, 100);
             repositorioSala.Cadastrar(sala);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             var salaEditada = new Sala(1, 150);
 
             var conseguiuEditar = repositorioSala.Editar(sala.Id, salaEditada);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             Assert.IsTrue(conseguiuEditar);
         }
@@ -70,10 +61,10 @@ namespace ControleDeCinema.Teste.Integracao.ModuloSala
         {
             var sala = new Sala(1, 100);
             repositorioSala.Cadastrar(sala);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             var conseguiuExcluir = repositorioSala.Excluir(sala.Id);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             var registroSelecionado = repositorioSala.SelecionarRegistroPorId(sala.Id);
 

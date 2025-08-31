@@ -6,6 +6,7 @@ using ControleDeCinema.Dominio.ModuloSala;
 using ControleDeCinema.Dominio.ModuloSessao;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 
@@ -16,7 +17,10 @@ public class ControleDeCinemaDbContext : IdentityDbContext<Usuario, Cargo, Guid>
     public DbSet<Sala> Salas { get; set; }
     public DbSet<Sessao> Sessoes { get; set; }
     public DbSet<Ingresso> Ingressos { get; set; }
+    
+    public DbSet<Teste> Teste { get; set; }
 
+    public DbSet<Teste> Testes { get; set; }
     private readonly ITenantProvider? tenantProvider;
 
     public ControleDeCinemaDbContext(DbContextOptions options, ITenantProvider? tenantProvider = null) : base(options)

@@ -2,27 +2,13 @@
 using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
 using ControleDeCinema.Infraestrutura.Orm.ModuloGeneroFilme;
 using ControleDeCinema.Teste.Integracao.Compartilhado;
-
-
+using Testcontainers.PostgreSql;
 namespace ControleDeCinema.Teste.Integracao.ModuloGenero
 {
     [TestClass]
     [TestCategory("Teste de Integração de Genero")]
-    public sealed class RepositorioGenerEmOrmTests
-    {
-
-        private ControleDeCinemaDbContext dbcontext;
-        private RepositorioGeneroFilmeEmOrm repositorioGenero;
-
-        [TestInitialize]
-
-        public void ConfigurarTeste()
-        {
-            dbcontext = TestDbContextFactory.CriarDbContext();
-
-            repositorioGenero = new RepositorioGeneroFilmeEmOrm(dbcontext);
-        }
-
+    public sealed class RepositorioGeneroEmOrmTests : Testfixture
+    {  
         [TestMethod]
         public void Deve_Cadastrar_Genero_Corretamente()
         {
@@ -31,7 +17,7 @@ namespace ControleDeCinema.Teste.Integracao.ModuloGenero
 
             //açao
             repositorioGenero.Cadastrar(genero);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             //assenção
             var registroSelecionado = repositorioGenero.SelecionarRegistroPorId(genero.Id);
@@ -40,7 +26,6 @@ namespace ControleDeCinema.Teste.Integracao.ModuloGenero
         }
 
         [TestMethod]
-
         public void Deve_Selecionar_Generro_corretamente()
         {
             //arranjo
@@ -52,7 +37,7 @@ namespace ControleDeCinema.Teste.Integracao.ModuloGenero
             repositorioGenero.Cadastrar(genero3);
 
             List<GeneroFilme> generosEsperados = [genero, genero2, genero3];
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             //açao
             var GenerosSelecionados = repositorioGenero.SelecionarRegistros();
@@ -63,20 +48,19 @@ namespace ControleDeCinema.Teste.Integracao.ModuloGenero
         }
 
         [TestMethod]
-
         public void Deve_Editar_Genero_Corretamente()
         {
             //arranjo
             var genero = new GeneroFilme("terror");
 
             repositorioGenero.Cadastrar(genero);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             var generoEditado = new GeneroFilme("aventura");
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
             //açao
             var conseguiuEditar = repositorioGenero.Editar(genero.Id, generoEditado);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             //assenção
 
@@ -85,19 +69,17 @@ namespace ControleDeCinema.Teste.Integracao.ModuloGenero
         }
 
         [TestMethod]
-
         public void Deve_Excluir_Genero_Corretamente()
         {
             //arranjo
             var genero = new GeneroFilme("drama");
 
             repositorioGenero.Cadastrar(genero);
-            dbcontext.SaveChanges();
-
+            dbContext.SaveChanges();
 
             //açao
             var ConseguiuExcluir = repositorioGenero.Excluir(genero.Id);
-            dbcontext.SaveChanges();
+            dbContext.SaveChanges();
 
             //assenção
             var registroSelecionado = repositorioGenero.SelecionarRegistroPorId(genero.Id);
