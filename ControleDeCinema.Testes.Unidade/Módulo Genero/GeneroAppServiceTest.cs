@@ -14,7 +14,7 @@ namespace ControleDeCinema.Testes.Unidade;
 public class GeneroAppServiceTest
 {
     private Mock<ITenantProvider> tenantProviderMock;
-    private Mock<IRepositorioGeneroFilme> repositorioFilmeMock;
+    private Mock<IRepositorioGeneroFilme> repositorioFgeneroMock;
     private Mock<IUnitOfWork> unitOfWorkMock;
     private Mock<ILogger<GeneroFilmeAppService>> loggerMock;
 
@@ -24,13 +24,13 @@ public class GeneroAppServiceTest
     public void Setup()
     {
         tenantProviderMock = new Mock<ITenantProvider>();
-        repositorioFilmeMock = new Mock<IRepositorioGeneroFilme>();
+        repositorioFgeneroMock = new Mock<IRepositorioGeneroFilme>();
         unitOfWorkMock = new Mock<IUnitOfWork>();
         loggerMock = new Mock<ILogger<GeneroFilmeAppService>>();
 
         generoAppService = new GeneroFilmeAppService(
             tenantProviderMock.Object,
-            repositorioFilmeMock.Object,
+            repositorioFgeneroMock.Object,
             unitOfWorkMock.Object,
             loggerMock.Object
         );
@@ -59,7 +59,7 @@ public class GeneroAppServiceTest
         var generoExistente = new GeneroFilme("Ação");
         var generoNovo = new GeneroFilme("Ação");
 
-        repositorioFilmeMock.Setup(r => r.SelecionarRegistros())
+        repositorioFgeneroMock.Setup(r => r.SelecionarRegistros())
             .Returns(new List<GeneroFilme> { generoExistente });
 
         // act
@@ -68,6 +68,5 @@ public class GeneroAppServiceTest
         // assert
         Assert.IsTrue(resultado.IsFailed);
         Assert.AreEqual("Registro duplicado", resultado.Errors[0].Message);
-
     }
 }

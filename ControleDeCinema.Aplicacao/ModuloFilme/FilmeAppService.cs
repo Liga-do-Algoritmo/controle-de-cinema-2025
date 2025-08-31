@@ -29,34 +29,42 @@ public class FilmeAppService
 
     public Result Cadastrar(Filme filme)
     {
-        var registros = repositorioFilme.SelecionarRegistros();
+        var erros = new List<string>();
 
-        if (registros.Any(i => i.Titulo.Equals(filme.Titulo)))
-            return Result.Fail(ResultadosErro.RegistroDuplicadoErro("Já existe um filme registrado com este título."));
+        if (string.IsNullOrWhiteSpace(filme.Titulo))
+            erros.Add("O Título é obrigatorio");
+
+        if (filme.Duracao <= 0)
+            erros.Add("A duração deve ser um número positivo");
+
+        if (filme.Lancamento == null)
+            erros.Add("O lançamento é obrigatorio");
+
+        if (filme.Genero is null)
+            erros.Add("O Gênero é obrigatorio");
+
+        var registros = repositorioFilme.SelecionarRegistros();
+        if (registros != null && registros.Any(i => i.Titulo.Equals(filme.Titulo)))
+            erros.Add("Já existe um filme registrado com este título.");
+
+        if (erros.Any())
+            return Result.Fail(erros.Select(e => new Error(e)).ToList());
 
         try
         {
             filme.UsuarioId = tenantProvider.UsuarioId.GetValueOrDefault();
-
             repositorioFilme.Cadastrar(filme);
-
             unitOfWork.Commit();
-
             return Result.Ok();
         }
         catch (Exception ex)
         {
             unitOfWork.Rollback();
-
-            logger.LogError(
-                ex,
-                "Ocorreu um erro durante o registro de {@Registro}.",
-                filme
-            );
-
+            logger.LogError(ex, "Ocorreu um erro durante o registro de {@Registro}.", filme);
             return Result.Fail(ResultadosErro.ExcecaoInternaErro(ex));
         }
     }
+
 
     public Result Editar(Guid id, Filme FilmeEditado)
     {
