@@ -1,111 +1,114 @@
-//using ControleDeCinema.Dominio.ModuloFilme;
-//using ControleDeCinema.Dominio.ModuloGeneroFilme;
-//using ControleDeCinema.Dominio.ModuloSala;
-//using ControleDeCinema.Dominio.ModuloSessao;
-//using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
-//using ControleDeCinema.Infraestrutura.Orm.ModuloFilme;
-//using ControleDeCinema.Infraestrutura.Orm.ModuloGeneroFilme;
-//using ControleDeCinema.Infraestrutura.Orm.ModuloSala;
-//using ControleDeCinema.Infraestrutura.Orm.ModuloSessao;
-//using ControleDeCinema.Teste.Integracao.Compartilhado;
-//using FizzWare.NBuilder;
-//using Microsoft.EntityFrameworkCore;
+using ControleDeCinema.Dominio.ModuloFilme;
+using ControleDeCinema.Dominio.ModuloGeneroFilme;
+using ControleDeCinema.Dominio.ModuloSala;
+using ControleDeCinema.Dominio.ModuloSessao;
+using ControleDeCinema.Infraestrutura.Orm.Compartilhado;
+using ControleDeCinema.Infraestrutura.Orm.ModuloFilme;
+using ControleDeCinema.Infraestrutura.Orm.ModuloGeneroFilme;
+using ControleDeCinema.Infraestrutura.Orm.ModuloSala;
+using ControleDeCinema.Infraestrutura.Orm.ModuloSessao;
+using ControleDeCinema.Teste.Integracao.Compartilhado;
+using FizzWare.NBuilder;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
-//namespace ControleDeCinema.Teste.Integracao;
+namespace ControleDeCinema.Teste.Integracao;
 
-//[TestClass]
-//[TestCategory("Teste de Integração de Sessão")]
-//public class RepositorioSessaoEmOrmTests :Testfixture
-//{ 
-  
-//    [TestMethod]
-//    public void Deve_Cadastrar_Sessao_Corretamente()
-//    {
-//        var genero = Builder<GeneroFilme>.CreateNew().Persist();
+[TestClass]
+[TestCategory("Teste de Integração de Sessão")]
+public class RepositorioSessaoEmOrmTests : Testfixture
+{
 
-//        var filme = Builder<Filme>.CreateNew()
-//             .With(f => f.Genero = genero)
-//            .Persist();
+    [TestMethod]
+    public void Deve_Cadastrar_Sessao_Corretamente()
+    {
+        var genero = Builder<GeneroFilme>.CreateNew().Persist();
 
-//        var sala = Builder<Sala>.CreateNew().Persist();
+        var filme = Builder<Filme>.CreateNew()
+             .With(f => f.Genero = genero)
+            .Persist();
 
-//        var sessao = new Sessao(DateTime.UtcNow, 50, filme, sala);
+        var sala = Builder<Sala>.CreateNew().Persist();
 
-//        repositorioSessao.Cadastrar(sessao);
+        var sessao = new Sessao(DateTime.UtcNow, 50, filme, sala);
 
-//        dbcontext.SaveChanges();
+        repositorioSessao.Cadastrar(sessao);
 
-//        var registroSelecionado = repositorioSessao.SelecionarRegistroPorId(sessao.Id);
+        dbContext.SaveChanges();
 
-//        Assert.AreEqual(sessao, registroSelecionado);
-//    }
-//    [TestMethod]
-//    public void Deve_Editar_Sessao_Corretamente()
-//    {
-//        var genero = Builder<GeneroFilme>.CreateNew().Persist();
+        var registroSelecionado = repositorioSessao.SelecionarRegistroPorId(sessao.Id);
 
-//        var filme = Builder<Filme>.CreateNew()
-//            .With(f => f.Genero = genero)
-//            .Persist();
+        Assert.AreEqual(sessao, registroSelecionado);
+    }
+    [TestMethod]
+    public void Deve_Editar_Sessao_Corretamente()
+    {
+        var genero = Builder<GeneroFilme>.CreateNew().Build();
 
-//        var sala = Builder<Sala>.CreateNew().Persist();
+        var filme = Builder<Filme>.CreateNew()
+            .With(f => f.Genero = genero)
+            .Build();
 
-//        var sessao = new Sessao(DateTime.UtcNow, 50, filme, sala);
-//        repositorioSessao.Cadastrar(sessao);
-//        dbcontext.SaveChanges();
+        var sala = Builder<Sala>.CreateNew().Build();
 
-//        var sessaoEditada = new Sessao(DateTime.UtcNow, 75, filme, sala);
+        var sessao = new Sessao(DateTime.UtcNow, 50, filme, sala);
+        repositorioSessao.Cadastrar(sessao);
+        dbContext.SaveChanges();
 
-//        var conseguiuEditar = repositorioSessao.Editar(sessao.Id, sessaoEditada);
-//        dbcontext.SaveChanges();
+        var sessaoEditada = new Sessao(DateTime.UtcNow, 75, filme, sala);
 
-//        Assert.IsTrue(conseguiuEditar);
-//    }
-//    [TestMethod]
-//    public void Deve_Selecionar_Sessao_Corretamente()
-//    {
-//        var genero = Builder<GeneroFilme>.CreateNew().Persist();
+        var conseguiuEditar = repositorioSessao.Editar(sessao.Id, sessaoEditada);
+        dbContext.SaveChanges();
 
-//        var filme = Builder<Filme>.CreateNew()
-//            .With(f => f.Genero = genero)
-//            .Persist();
+        Assert.IsTrue(conseguiuEditar);
+    }
+    [TestMethod]
+    public void Deve_Selecionar_Sessao_Corretamente()
+    {
+        var genero = Builder<GeneroFilme>.CreateNew().Build();
 
-//        var sala = Builder<Sala>.CreateNew().Persist();
+        var filme = Builder<Filme>.CreateNew()
+            .With(f => f.Genero = genero)
+            .Persist();
 
-//        var sessao = new Sessao(DateTime.UtcNow, 50, filme, sala);
-//        var sessao2 = new Sessao(DateTime.UtcNow, 70, filme, sala);
-//        var sessao3= new Sessao(DateTime.UtcNow, 90, filme, sala);
+        var sala = Builder<Sala>.CreateNew().Persist();
 
-//        repositorioSessao.Cadastrar(sessao);
-//        repositorioSessao.Cadastrar(sessao2);
-//        repositorioSessao.Cadastrar(sessao3);
-//        dbcontext.SaveChanges();
+        var sessao = new Sessao(DateTime.UtcNow, 50, filme, sala);
+        var sessao2 = new Sessao(DateTime.UtcNow, 70, filme, sala);
+        var sessao3 = new Sessao(DateTime.UtcNow, 90, filme, sala);
 
-//        List<Sessao> resultadoEsperado = [sessao,sessao2, sessao3];
+        repositorioSessao.Cadastrar(sessao);
+        repositorioSessao.Cadastrar(sessao2);
+        repositorioSessao.Cadastrar(sessao3);
+        dbContext.SaveChanges();
 
-//        var registrosSelecionados = repositorioSessao.SelecionarRegistros();
+        List<Sessao> resultadoEsperado = [sessao, sessao2, sessao3];
 
-//        CollectionAssert.AreEquivalent(resultadoEsperado, registrosSelecionados);
-//    }
-//    [TestMethod]
-//    public void Deve_ExcluirSessao_corretamente()
-//    {
-//        var genero = Builder<GeneroFilme>.CreateNew().Persist();
+        var registrosSelecionados = repositorioSessao.SelecionarRegistros();
 
-//        var filme = Builder<Filme>.CreateNew()
-//            .With(f => f.Genero = genero)
-//            .Persist();
+        CollectionAssert.AreEquivalent(resultadoEsperado, registrosSelecionados);
+    }
+        [TestMethod]
 
-//        var sala = Builder<Sala>.CreateNew().Persist();
+         void Deve_ExcluirSessao_corretamente()
+        {
+            var genero = Builder<GeneroFilme>.CreateNew().Persist();
 
-//        var sessao = new Sessao(DateTime.UtcNow, 50, filme, sala);
+            var filme = Builder<Filme>.CreateNew()
+                .With(f => f.Genero = genero)
+                .Persist();
 
-//        repositorioSessao.Cadastrar(sessao);
+            var sala = Builder<Sala>.CreateNew().Persist();
 
-//        dbcontext.SaveChanges();
+            var sessao = new Sessao(DateTime.UtcNow, 50, filme, sala);
 
-//        var conseguiuExcluir = repositorioSessao.Excluir(sessao.Id);
+            repositorioSessao.Cadastrar(sessao);
 
-//        Assert.IsTrue(conseguiuExcluir);
-//    }
-//}
+            dbContext.SaveChanges();
+
+            var conseguiuExcluir = repositorioSessao.Excluir(sessao.Id);
+
+            Assert.IsTrue(conseguiuExcluir);
+        }
+    }
+

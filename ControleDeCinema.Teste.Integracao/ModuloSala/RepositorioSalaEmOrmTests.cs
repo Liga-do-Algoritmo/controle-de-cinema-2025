@@ -19,8 +19,10 @@ namespace ControleDeCinema.Teste.Integracao.ModuloSala
             dbContext.SaveChanges();
 
             var registroSelecionado = repositorioSala.SelecionarRegistroPorId(sala.Id);
+            var registrosSelecionados = repositorioSala.SelecionarRegistros().Count;
 
             Assert.AreEqual(sala, registroSelecionado);
+            Assert.AreEqual(1, registrosSelecionados);
         }
 
         [TestMethod]

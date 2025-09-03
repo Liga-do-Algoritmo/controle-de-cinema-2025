@@ -56,6 +56,7 @@ public abstract class Testfixture
         BuilderSetup.SetCreatePersistenceMethod<Sala>(repositorioSala.Cadastrar);
         BuilderSetup.SetCreatePersistenceMethod<GeneroFilme>(repositorioGenero.Cadastrar);
        
+        
     }
     private static void ConfigurarTabelas(ControleDeCinemaDbContext dbcontext)
     {
@@ -64,6 +65,7 @@ public abstract class Testfixture
         dbcontext.GenerosFilme.RemoveRange(dbcontext.GenerosFilme);
         dbcontext.Filmes.RemoveRange(dbcontext.Filmes);
         dbcontext.Sessoes.RemoveRange(dbcontext.Sessoes);
+        dbcontext.Salas.RemoveRange(dbcontext.Salas);
 
         dbcontext.SaveChanges();
     }
